@@ -2,5 +2,7 @@
 /tools/__pycache__
 /build
 /models
-/uploads
+uploads/ringkasan/*
+uploads/transkrip/*
+uploads/parse/*
 /venv
