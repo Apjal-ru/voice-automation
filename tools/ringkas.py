@@ -8,7 +8,7 @@ import secrets
 # Alamat server Ollama remote
 OLLAMA_HOST = "http://10.9.23.2:11434"
 
-def ringkas_teks(teks, model="llama3.2", source_filename=None):
+def ringkas_teks(teks, model="mistral:7b", source_filename=None):
     if not teks.strip():
         return "Tidak ada transkripsi yang terdeteksi"
     
