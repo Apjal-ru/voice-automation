@@ -17,6 +17,24 @@ function setStatus(text, stateClass) {
     if (stateClass) statusIndicator.classList.add(stateClass);
 }
 
+// Bersihkan teks transkrip dari cap waktu/subtitle timestamps dan normalisasi spasi
+function cleanTranscript(text) {
+    if (!text) return "";
+    let t = String(text);
+    // Hapus bracketed timestamps, contoh: [00:00:00.000 --> 00:00:05.000] atau [00:00:00.000]
+    t = t.replace(/\[\s*\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?\s*(?:-->|-)\s*\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?\s*\]/g, "");
+    t = t.replace(/\[\s*\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?\s*\]/g, "");
+    // Hapus bare timestamps seperti: 00:00:00.000 --> 00:00:05.000
+    t = t.replace(/\b\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?\s*--?>\s*\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?\b/g, "");
+    // Hapus standalone timestamps seperti 00:00:12.345 atau 00:00:12
+    t = t.replace(/\b\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?\b/g, "");
+    // Normalize newlines and trim extra blank lines
+    t = t.replace(/\r\n?/g, "\n");
+    t = t.replace(/\n\s*\n+/g, "\n\n");
+    // Trim leading/trailing whitespace
+    return t.trim();
+}
+
 // === Initial state ===
 showTranscriptBtn.disabled = true;
 setStatus('Status: Menunggu...', 'idle');
@@ -86,8 +104,12 @@ recordBtn.onclick = async () => {
                         return;
                     }
 
-                    // === Jika hasil transkrip sudah tersedia ===
-                    resultText.innerHTML = `<p>${data.teks}</p>`;
+                    // Bersihkan timestamps/subtitle markers dan normalisasi teks
+                    let cleanText = cleanTranscript(data.teks);
+                    // juga pastikan baris tidak memiliki spasi berlebih di sekitar newline
+                    cleanText = cleanText.replace(/\s*\n\s*/g, "\n");
+
+                    resultText.innerHTML = `<pre>${cleanText}</pre>`;
                     setStatus('Status: Meringkas data.', 'ringkas');
                     showTranscriptBtn.disabled = false;
 
@@ -122,16 +144,15 @@ recordBtn.onclick = async () => {
 
                     alert("✅ Transkrip selesai & form otomatis terisi! Klik 📄 untuk melihat hasil transkrip.");
                     setStatus('Status: Selesai', 'done');
-                } 
+                }
                 // === Jika server mengirim teks (bukan JSON) ===
                 else {
                     const teks = await response.text();
-                    resultText.innerHTML = `<pre>${teks}</pre>`;
+                    // Bersihkan timestamps agar modal tidak menunjukkan cap waktu
+                    const cleanText = cleanTranscript(teks);
+                    resultText.innerHTML = `<pre>${cleanText}</pre>`;
 
-                    const lower = teks.toLowerCase();
-                    // Be conservative: only treat explicit markers as errors so that
-                    // progress/info logs (which may contain the word "error" in context)
-                    // are not misinterpreted as a failure while Whisper is still running.
+                    const lower = cleanText.toLowerCase();
                     const indicatesError = lower.includes('[gagal]') || lower.includes('[error]') || lower.trim().startsWith('[gagal]') || lower.trim().startsWith('[error]');
                     const indicatesDone = lower.includes('transkrip selesai') || lower.includes('[result]') || lower.includes('hasil transkrip');
 

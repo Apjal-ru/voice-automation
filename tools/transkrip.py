@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import traceback
 import requests
@@ -47,7 +48,7 @@ def transkrip_audio(upload_file=None):
             "-ar", "16000", 
             "-ac", "1", 
             "-y", wav_path
-            ]
+        ]
         subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
         print(f"[INFO] File audio siap untuk transkripsi: {wav_path}")
 
@@ -58,8 +59,7 @@ def transkrip_audio(upload_file=None):
             "--model", MODEL_PATH,
             "--language", "id",
             "--output-txt", "",
-            "--output-file", txt_path,
-            "-nt"
+            "--output-file", txt_path
         ]
 
         print(f"[INFO] Menjalankan Whisper: {' '.join(whisper_cmd)}")
@@ -74,14 +74,22 @@ def transkrip_audio(upload_file=None):
         # === Ambil hasil dari file output ===
         if os.path.exists(txt_path):
             with open(txt_path, "r", encoding="utf-8") as f:
-                teks = f.read().strip()
+                teks_asli = f.read().strip()
         else:
-            teks = result.stdout.strip()
+            teks_asli = result.stdout.strip()
 
-        if not teks:
+        if not teks_asli:
             print("[WARN] Tidak ada hasil transkripsi yang terdeteksi.")
             return "[GAGAL] Whisper tidak menghasilkan teks apa pun."
 
+        # === Bersihkan timestamp agar hasil rapi per baris ===
+        baris_bersih = []
+        for line in teks_asli.splitlines():
+            clean_line = re.sub(r"\[\d{2}:\d{2}\.\d{3}\s*-->\s*\d{2}:\d{2}\.\d{3}\]\s*", "", line).strip()
+            if clean_line:
+                baris_bersih.append(clean_line)
+
+        teks = "\n".join(baris_bersih)
 
         print("======================================================")
         print(f"[RESULT] Hasil transkrip untuk '{os.path.basename(wav_path)}':")
