@@ -1,8 +1,8 @@
 /__pycache__
 /tools/__pycache__
-build/*
-models/*
-uploads/ringkasan/*
-uploads/transkrip/*
-uploads/parse/*
+/build/*
+/models/*
+/uploads/ringkasan/*
+/uploads/transkrip/*
+/uploads/parse/*
 /venv
