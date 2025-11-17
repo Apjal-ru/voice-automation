@@ -14,7 +14,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Path whisper & model
 WHISPER_PATH = os.path.join(PROJECT_DIR, "build", "whisper")
-MODEL_PATH = os.path.join(PROJECT_DIR, "models", "ggml-small.bin")
+MODEL_PATH = os.path.join(PROJECT_DIR, "models", "ggml-medium.bin")
 
 def transkrip_audio(upload_file=None):
     """

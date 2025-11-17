@@ -125,12 +125,39 @@ recordBtn.onclick = async () => {
                                 const formData = await res.json();
                                 Object.entries(formData).forEach(([id, val]) => {
                                     const el = document.getElementById(id);
-                                    if (el) {
-                                        if (el.type === "radio" || el.type === "checkbox") {
-                                            el.checked = !!val;
-                                        } else {
-                                            el.value = val;
-                                        }
+                                    if (!el) return;
+
+                                    // --- SKIP radio PE karena di-handle khusus ---
+                                    const peFields = ["kepala", "mata", "tht", "leher", "paru", "jantung", "abdomen", "ekstermitas", "uro"];
+                                    if (peFields.includes(id)) return;
+                                    // ------------------------------------------------
+
+                                    if (el.type === "radio" || el.type === "checkbox") {
+                                        el.checked = !!val;
+                                    } else {
+                                        el.value = val;
+                                    }
+                                });
+                                const peFields = ["kepala", "mata", "tht", "leher", "paru", "jantung", "abdomen", "ekstermitas", "uro"];
+
+                                peFields.forEach(field => {
+                                    // prefer the stored parse JSON key (pe-<field>)
+                                    let val = formData[`pe-${field}`];
+                                    if (val === undefined) val = formData[field];
+                                    if (!val) return;
+
+                                    const lower = String(val).trim().toLowerCase();
+                                    if (lower === "-" || lower === "") return; // nothing to apply
+
+                                    const normalRadio = document.getElementById(`${field}-n`);
+                                    const abnormalRadio = document.getElementById(`${field}-a`);
+
+                                    if (lower === "normal") {
+                                        if (normalRadio) normalRadio.checked = true;
+                                    } else if (lower === "abnormal") {
+                                        if (abnormalRadio) abnormalRadio.checked = true;
+                                        const inputBox = document.getElementById(`input_${field}`);
+                                        if (inputBox) inputBox.style.visibility = "visible";
                                     }
                                 });
                                 console.log("✅ Form otomatis terisi berdasarkan hasil transkrip.");
