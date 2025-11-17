@@ -1,7 +1,7 @@
 /__pycache__
 /tools/__pycache__
-/build
-/models
+build/*
+models/*
 uploads/ringkasan/*
 uploads/transkrip/*
 uploads/parse/*
