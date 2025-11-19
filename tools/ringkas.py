@@ -6,26 +6,23 @@ import time
 import secrets
 
 # Alamat server Ollama remote
-OLLAMA_HOST = "http://10.9.23.2:11434"
+OLLAMA_HOST = "http://10.9.23.205:11434"
 
 def ringkas_teks(teks, model="mistral:7b", source_filename=None):
     if not teks.strip():
         return "Tidak ada transkripsi yang terdeteksi"
     
     url = f"{OLLAMA_HOST}/api/generate"
-
-    # =====================================================
-    # Tambahan instruksi PE Normal/Abnormal
-    # =====================================================
     payload = {
         "model": model,
         "prompt": f"""
 Kamu adalah asisten medis, yang membantu dokter meringkas percakapan dengan pasien.
-Gunakan format SOAP.
 
 - Tugasmu adalah meringkas teks percakapan antara dokter dan pasien.
 - Jangan berasumsi atau menambahkan informasi yang tidak ada dalam percakapan.
 - Jika informasi tidak ada, isikan dengan tanda "-" tanpa keterangan tambahan.
+- Fokuskan PE hanya pada status Normal/Abnormal tanpa keterangan tambahan.
+- Jika tidak ditemukan dalam percakapan, set default PE ke "Normal".
 
 Format ringkasan WAJIB seperti berikut:
 
@@ -50,9 +47,6 @@ Jantung: Normal/Abnormal
 Abdomen: Normal/Abnormal
 Ekstermitas: Normal/Abnormal
 Uro-genital: Normal/Abnormal
-
-Fokuskan PE hanya pada status Normal/Abnormal tanpa keterangan tambahan.
-Jika tidak ditemukan dalam percakapan, set default = "Normal".
 
 Gunakan bahasa Indonesia profesional dan singkat.
 
