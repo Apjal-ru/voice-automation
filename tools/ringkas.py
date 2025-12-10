@@ -25,7 +25,6 @@ Kamu adalah asisten medis, yang membantu dokter meringkas percakapan dengan pasi
 - Jika tidak ditemukan dalam percakapan, set default PE ke "Normal".
 
 Format ringkasan WAJIB seperti berikut:
-
 Keluhan utama: ...
 Riwayat penyakit: ...
 Sosial Budaya: ...
@@ -36,7 +35,6 @@ Frekuensi Nafas: ...
 Berat Badan: ...
 Asesmen: ...
 Plan: ...
-
 Pemeriksaan Fisik (PE):
 Kepala: Normal/Abnormal
 Mata: Normal/Abnormal
@@ -114,7 +112,6 @@ Teks percakapan:
         raise RuntimeError(f"Gagal menghubungi Ollama: {str(e)}")
 
 def parse_ringkasan(ringkasan):
-
     # SOAP
     keluhan = ""
     riwayat = ""
@@ -126,7 +123,6 @@ def parse_ringkasan(ringkasan):
     beratBadan = ""
     assesmen = ""
     plan = ""
-
     # PE
     kepala = "Normal"
     mata = "Normal"
@@ -139,7 +135,6 @@ def parse_ringkasan(ringkasan):
     uro = "Normal"
 
     for line in ringkasan.splitlines():
-
         # SOAP
         if "Keluhan utama" in line:
             keluhan = line.split(":", 1)[1].strip()
@@ -161,7 +156,6 @@ def parse_ringkasan(ringkasan):
             assesmen = line.split(":", 1)[1].strip()
         elif "Plan" in line:
             plan = line.split(":", 1)[1].strip()
-
         # Pemeriksaan Fisik (PE)
         elif "Kepala" in line:
             kepala = line.split(":", 1)[1].strip()
@@ -193,7 +187,6 @@ def parse_ringkasan(ringkasan):
         "beratBadan": beratBadan,
         "assesmen": assesmen,
         "plan": plan,
-
         # Pemeriksaan fisik
         "kepala": kepala,
         "mata": mata,
