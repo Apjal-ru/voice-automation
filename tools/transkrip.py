@@ -28,13 +28,11 @@ def transkrip_audio(upload_file=None):
             os.makedirs(os.path.dirname(input_path) or UPLOAD_DIR, exist_ok=True)
             with open(input_path, "wb") as f:
                 f.write(upload_file.file.read())
-            # print(f"[INFO] File diterima: {input_path}")
         else:
             list_files = glob(os.path.join(UPLOAD_DIR, "*.webm"))
             if not list_files:
                 return "[ERROR] Tidak ada file .webm di folder uploads"
             input_path = max(list_files, key=os.path.getmtime)
-            # print(f"[INFO] Menggunakan file .webm terbaru: {input_path}")
 
         # === Konversi ke WAV ===
         basename = os.path.splitext(os.path.basename(input_path))[0]
@@ -49,7 +47,6 @@ def transkrip_audio(upload_file=None):
             "-y", wav_path
         ]
         subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-        # print(f"[INFO] File audio siap untuk transkripsi: {wav_path}")
 
         # === Jalankan Whisper ===
         whisper_cmd = [
@@ -61,7 +58,6 @@ def transkrip_audio(upload_file=None):
             "--output-file", txt_path
         ]
 
-        # print(f"[INFO] Menjalankan Whisper: {' '.join(whisper_cmd)}")
         result = subprocess.run(
             whisper_cmd,
             stdout=subprocess.PIPE,
@@ -78,7 +74,6 @@ def transkrip_audio(upload_file=None):
             teks_asli = result.stdout.strip()
 
         if not teks_asli:
-            # print("[WARN] Tidak ada hasil transkripsi yang terdeteksi.")
             return "[GAGAL] Whisper tidak menghasilkan teks apa pun."
 
         # === Bersihkan timestamp agar hasil rapi per baris ===
@@ -89,19 +84,11 @@ def transkrip_audio(upload_file=None):
                 baris_bersih.append(clean_line)
 
         teks = "\n".join(baris_bersih)
-
-        # print("======================================================")
-        # print(f"[RESULT] Hasil transkrip untuk '{os.path.basename(wav_path)}':")
-        # print(teks)
-        # print("======================================================")
-        # print("[INFO] Transkrip selesai.")
         return teks
 
     except subprocess.CalledProcessError as cpe:
-        # print("[ERROR] Terjadi kesalahan saat menjalankan proses eksternal:")
         traceback.print_exc()
         return f"[GAGAL] Kesalahan proses eksternal: {cpe.stderr.strip()}"
     except Exception as e:
-        # print("[ERROR] Terjadi kesalahan saat transkripsi:")
         traceback.print_exc()
         return f"[GAGAL] {e}"
