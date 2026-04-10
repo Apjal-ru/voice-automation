@@ -8,9 +8,9 @@
 /data
 
 # Dependencies
-/darsi_doctor/node_modules
-/darsi_doctor/.pnp
-/darsi_doctor/.pnp.js
+darsi_doctor/node_modules/
+darsi_doctor/.pnp
+darsi_doctor/.pnp.js
 
 # Build outputs
 dist
@@ -18,11 +18,11 @@ build
 .turbo
 
 # Environment
-/darsi_doctor/.env
-/darsi_doctor/.env.local
-/darsi_doctor/.env.development.local
-/darsi_doctor/.env.test.local
-/darsi_doctor/.env.production.local
+darsi_doctor/.env
+darsi_doctor/.env.local
+darsi_doctor/.env.development.local
+darsi_doctor/.env.test.local
+darsi_doctor/.env.production.local
 
 # Logs
 logs
