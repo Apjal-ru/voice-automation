@@ -22,6 +22,11 @@ app.mount("/uploads/parse", StaticFiles(directory="uploads/parse"), name="upload
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("soap_global.html", {"request": request})
+
+@app.get("/doctor/soap", response_class=HTMLResponse)
+async def doctor_soap(request: Request):
+    """Route baru untuk akses dokter ke formulir SOAP."""
+    return templates.TemplateResponse("soap_global.html", {"request": request})
     
 
 @app.post("/transkrip")

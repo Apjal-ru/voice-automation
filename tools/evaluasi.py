@@ -19,7 +19,11 @@ FIELDS = [
 ]
 
 def is_filled(value):
-    return value.strip() != "-" and value.strip() != ""
+    if value is None: return False
+    # Tambahkan pengecekan jika value adalah list atau dict
+    if isinstance(value, (list, dict)): return len(value) > 0
+    val_str = str(value).strip().lower()
+    return val_str not in ["-", "", "none", "null", "tidak ada", "normal"]
 
 def main():
     y_true, y_pred = [], []
